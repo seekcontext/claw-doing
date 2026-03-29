@@ -1,0 +1,60 @@
+{
+  "name": "claw-doing",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Real-time progress tracking for long-running OpenClaw agent tasks. See what your agent is doing — right now.",
+  "keywords": [
+    "openclaw",
+    "openclaw-plugin",
+    "agent",
+    "progress",
+    "task-tracking",
+    "long-running"
+  ],
+  "license": "MIT",
+  "author": "seekcontext",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seekcontext/claw-doing.git"
+  },
+  "homepage": "https://github.com/seekcontext/claw-doing#readme",
+  "bugs": {
+    "url": "https://github.com/seekcontext/claw-doing/issues"
+  },
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "bootstrap",
+    "SKILL.md",
+    "openclaw.plugin.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.49"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

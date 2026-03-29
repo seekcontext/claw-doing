@@ -1,0 +1,21 @@
+{
+  "id": "claw-doing",
+  "name": "Claw Doing",
+  "description": "Real-time progress tracking for long-running OpenClaw agent tasks. See what your agent is doing — right now.",
+  "configSchema": {
+    "type": "object",
+    "properties": {
+      "storageDir": {
+        "type": "string",
+        "description": "Custom directory for task state files. Defaults to ~/.openclaw/workspace/claw-doing/tasks/"
+      },
+      "progressBarWidth": {
+        "type": "number",
+        "description": "Width of the progress bar in characters. Defaults to 10.",
+        "minimum": 5,
+        "maximum": 20
+      }
+    },
+    "additionalProperties": false
+  }
+}
