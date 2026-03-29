@@ -98,11 +98,7 @@ The plugin ships with `bootstrap/TASK_TRACKER.md` — a set of instructions that
 }
 ```
 
-Or copy it manually to your workspace:
-
-```bash
-cp node_modules/claw-doing/bootstrap/TASK_TRACKER.md ~/.openclaw/workspace/TASK_TRACKER.md
-```
+Or copy it manually to your workspace — locate `TASK_TRACKER.md` inside the installed package under `node_modules/claw-doing/bootstrap/` and place it in your OpenClaw workspace directory (typically `~/.openclaw/workspace/`).
 
 Then add `TASK_TRACKER.md` to your bootstrap file list so the agent loads it on start.
 

@@ -1,0 +1,7 @@
+# Exclude dev/build artifacts from the published package.
+# Runtime files are whitelisted via the "files" field in package.json.
+package-lock.json
+tsconfig.json
+src/
+*.test.ts
+.github/

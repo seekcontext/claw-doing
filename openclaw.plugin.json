@@ -2,6 +2,14 @@
   "id": "claw-doing",
   "name": "Claw Doing",
   "description": "Real-time progress tracking for long-running OpenClaw agent tasks. See what your agent is doing — right now.",
+  "permissions": {
+    "network": false,
+    "filesystem": {
+      "read": ["$storageDir"],
+      "write": ["$storageDir"]
+    },
+    "env": ["CLAW_DOING_STORAGE_DIR"]
+  },
   "configSchema": {
     "type": "object",
     "properties": {

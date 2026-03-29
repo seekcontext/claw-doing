@@ -1,3 +1,11 @@
+/**
+ * Task state store — local file system only.
+ *
+ * This module reads and writes JSON files inside a single configurable
+ * directory (default: ~/.openclaw/workspace/claw-doing/tasks/).
+ * It makes no network requests and accesses no credentials or environment
+ * variables other than CLAW_DOING_STORAGE_DIR.
+ */
 import { promises as fs } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
