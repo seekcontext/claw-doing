@@ -74,7 +74,16 @@ export function listRuns(limit = 20): RunRow[] {
 
 export function getRun(runId: string): RunRow | null {
   const db = getDb();
-  return (db.prepare(`SELECT * FROM runs WHERE id = ?`).get(runId) ?? null) as unknown as RunRow | null;
+  // Support short prefix IDs (like git short hashes) as well as full UUIDs.
+  if (runId.length === 36) {
+    return (db.prepare(`SELECT * FROM runs WHERE id = ?`).get(runId) ?? null) as unknown as RunRow | null;
+  }
+  const rows = db.prepare(`SELECT * FROM runs WHERE id LIKE ?`).all(runId + "%") as unknown as RunRow[];
+  if (rows.length === 0) return null;
+  if (rows.length > 1) {
+    throw new Error(`Ambiguous run ID prefix "${runId}" matches ${rows.length} runs. Use a longer prefix.`);
+  }
+  return rows[0];
 }
 
 export function getToolCallsForRun(runId: string): ToolCallRow[] {

@@ -121,11 +121,11 @@ function runsInspect(runId: string, options: { tools?: boolean }): void {
   console.log();
 
   if (options.tools) {
-    printToolsOnly(runId);
+    printToolsOnly(run.id);
     return;
   }
 
-  printTimeline(runId);
+  printTimeline(run.id);
 }
 
 function printToolsOnly(runId: string): void {
