@@ -7,3 +7,11 @@ dist/
 
 # Dependencies
 node_modules/
+
+# OS / editor artifacts
+.DS_Store
+*.swp
+*.swo
+
+# Design sketches (local only)
+tui-sketch.html

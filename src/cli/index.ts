@@ -17,6 +17,16 @@ program
     console.log(DB_PATH);
   });
 
+program
+  .command("tui")
+  .description("open interactive TUI (Runs list + timeline inspector)")
+  .action(async () => {
+    const { default: React } = await import("react");
+    const { render } = await import("ink");
+    const { App } = await import("../tui/App.js");
+    render(React.createElement(App));
+  });
+
 registerRunsCommands(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {
