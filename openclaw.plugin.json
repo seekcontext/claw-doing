@@ -1,0 +1,8 @@
+{
+  "name": "claw-doing",
+  "version": "0.1.0",
+  "description": "OpenClaw-first run debugger — see what your agent is doing",
+  "extensions": [
+    "./dist/index.js"
+  ]
+}
