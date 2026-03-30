@@ -45,6 +45,17 @@ export function truncate(s: string | null | undefined, max: number): string {
   return s.slice(0, max) + "…";
 }
 
+export function fmtRelativeTime(ms: number | null): string {
+  if (!ms) return "—";
+  const diff = Date.now() - ms;
+  if (diff < 60_000) return "just now";
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  const days = Math.floor(diff / 86_400_000);
+  if (days < 14) return `${days}d ago`;
+  return fmtTimeShort(ms);
+}
+
 export function fmtJson(json: string | null | undefined, max = 200): string {
   if (!json || json === "null") return "(none)";
   try {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Text, useInput } from "ink";
+import { Box, Text, useInput, useStdout } from "ink";
 import { listRuns, type RunRow } from "../../db/queries.js";
-import { fmtTimeShort, fmtDuration, fmtTokens, statusIcon, truncate } from "../format.js";
+import { fmtRelativeTime, fmtDuration, fmtTokens, statusIcon, truncate } from "../format.js";
 import { StatusBar } from "../components/StatusBar.js";
 
 interface SessionGroup {
@@ -16,15 +16,20 @@ interface SessionsViewProps {
   onQuit: () => void;
 }
 
+// Overhead: app title(1) + statusbar(2) + buffer(1) = 4
+const OVERHEAD = 4;
+
+type NavItem =
+  | { kind: "group"; groupIdx: number }
+  | { kind: "run"; groupIdx: number; runIdx: number };
+
 export function SessionsView({ onInspect, onSwitchTab, onQuit }: SessionsViewProps) {
   const [groups, setGroups] = useState<SessionGroup[]>([]);
   const [cursor, setCursor] = useState(0);
+  const { stdout } = useStdout();
 
-  // Flat list of navigable items: group headers + run rows
-  type NavItem =
-    | { kind: "group"; groupIdx: number }
-    | { kind: "run"; groupIdx: number; runIdx: number };
-
+  // Build flat navigation list from groups (rebuilt each render).
+  // No findIndex needed — each item's navIndex = its position in this array.
   const navItems: NavItem[] = [];
   for (let gi = 0; gi < groups.length; gi++) {
     navItems.push({ kind: "group", groupIdx: gi });
@@ -35,6 +40,12 @@ export function SessionsView({ onInspect, onSwitchTab, onQuit }: SessionsViewPro
       }
     }
   }
+
+  // Viewport: sliding window around cursor
+  const termHeight = stdout?.rows ?? 24;
+  const visibleCount = Math.max(5, termHeight - OVERHEAD);
+  const viewStart = Math.max(0, cursor - Math.floor(visibleCount / 2));
+  const visibleItems = navItems.slice(viewStart, viewStart + visibleCount);
 
   const load = useCallback(() => {
     const rows = listRuns(200);
@@ -79,56 +90,49 @@ export function SessionsView({ onInspect, onSwitchTab, onQuit }: SessionsViewPro
         <Box paddingX={1}><Text color="gray">No sessions found.</Text></Box>
       )}
 
-      {groups.map((group, gi) => {
-        const groupNavIdx = navItems.findIndex(
-          n => n.kind === "group" && n.groupIdx === gi
-        );
-        const groupSelected = cursor === groupNavIdx;
+      {/* Render only the visible slice of the flat navItems list.
+          Each item's navIndex = viewStart + localIdx — no findIndex needed. */}
+      {visibleItems.map((item, localIdx) => {
+        const navIdx = viewStart + localIdx;
+        const selected = cursor === navIdx;
 
-        return (
-          <Box key={group.sessionKey} flexDirection="column">
-            {/* group header */}
-            <Box paddingX={1} backgroundColor={groupSelected ? "blueBright" : "gray"}>
-              <Text color={groupSelected ? "black" : "white"} bold>
+        if (item.kind === "group") {
+          const group = groups[item.groupIdx]!;
+          return (
+            <Box key={`group-${item.groupIdx}`} paddingX={1} backgroundColor={selected ? "blueBright" : "gray"}>
+              <Text color={selected ? "black" : "white"} bold>
                 {group.collapsed ? "▸" : "▾"}{" "}
               </Text>
-              <Text color={groupSelected ? "black" : "cyan"} bold>
+              <Text color={selected ? "black" : "cyan"} bold>
                 {truncate(group.sessionKey, 60)}
               </Text>
-              <Text color={groupSelected ? "black" : "gray"}>
+              <Text color={selected ? "black" : "gray"}>
                 {"  "}{group.runs.length} run(s)
               </Text>
             </Box>
+          );
+        }
 
-            {/* run rows */}
-            {!group.collapsed && group.runs.map((run, ri) => {
-              const runNavIdx = navItems.findIndex(
-                n => n.kind === "run" && n.groupIdx === gi && n.runIdx === ri
-              );
-              const runSelected = cursor === runNavIdx;
-              const icon = statusIcon(run.status);
-              const statusColor = run.status === "success" ? "green" : run.status === "error" ? "red" : "yellow";
-
-              return (
-                <Box key={run.id} paddingX={3} backgroundColor={runSelected ? "blueBright" : undefined}>
-                  <Text color={runSelected ? "black" : "cyan"} bold>
-                    {run.id.slice(0, 8)}{"  "}
-                  </Text>
-                  <Text color={runSelected ? "black" : "gray"}>
-                    {fmtTimeShort(run.started_at)}{"  "}
-                  </Text>
-                  <Text color={runSelected ? "black" : statusColor}>
-                    {icon}{"  "}
-                  </Text>
-                  <Text color={runSelected ? "black" : undefined}>
-                    {fmtDuration(run.duration_ms)}{"  "}
-                  </Text>
-                  <Text color={runSelected ? "black" : "yellow"}>
-                    {fmtTokens(run)} tok
-                  </Text>
-                </Box>
-              );
-            })}
+        const run = groups[item.groupIdx]!.runs[item.runIdx]!;
+        const icon = statusIcon(run.status);
+        const statusColor = run.status === "success" ? "green" : run.status === "error" ? "red" : "yellow";
+        return (
+          <Box key={run.id} paddingX={3} backgroundColor={selected ? "blueBright" : undefined}>
+            <Text color={selected ? "black" : "cyan"} bold>
+              {run.id.slice(0, 8)}{"  "}
+            </Text>
+            <Text color={selected ? "black" : "gray"}>
+              {fmtRelativeTime(run.started_at)}{"  "}
+            </Text>
+            <Text color={selected ? "black" : statusColor}>
+              {icon}{"  "}
+            </Text>
+            <Text color={selected ? "black" : undefined}>
+              {fmtDuration(run.duration_ms)}{"  "}
+            </Text>
+            <Text color={selected ? "black" : "yellow"}>
+              {fmtTokens(run)} tok
+            </Text>
           </Box>
         );
       })}

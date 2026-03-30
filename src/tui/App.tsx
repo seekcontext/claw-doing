@@ -5,13 +5,15 @@ import { RunsList } from "./screens/RunsList.js";
 import { RunInspect } from "./screens/RunInspect.js";
 import { EntryDetail } from "./screens/EntryDetail.js";
 import { SessionsView } from "./screens/SessionsView.js";
+import { LiveView } from "./screens/LiveView.js";
 
 type Tab = "runs" | "sessions";
 
 type Screen =
   | { name: "list" }
   | { name: "inspect"; runId: string }
-  | { name: "detail"; runId: string; entry: TimelineEntry };
+  | { name: "detail"; runId: string; entry: TimelineEntry }
+  | { name: "live" };
 
 export function App() {
   const { exit } = useApp();
@@ -39,6 +41,8 @@ export function App() {
     setScreen({ name: "list" });
   };
 
+  const handleLive = () => setScreen({ name: "live" });
+
   return (
     <Box flexDirection="column" flexGrow={1}>
       {/* title bar */}
@@ -55,6 +59,7 @@ export function App() {
         <RunsList
           onInspect={handleInspect}
           onSwitchTab={handleSwitchTab}
+          onLive={handleLive}
           onQuit={() => exit()}
         />
       )}
@@ -77,6 +82,9 @@ export function App() {
           entry={screen.entry}
           onBack={() => handleBackToInspect(screen.runId)}
         />
+      )}
+      {screen.name === "live" && (
+        <LiveView onBack={handleBackToList} />
       )}
     </Box>
   );

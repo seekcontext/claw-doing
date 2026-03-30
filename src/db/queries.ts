@@ -63,6 +63,14 @@ export interface LlmCallRow {
   total_tokens: number | null;
 }
 
+export function listActiveRuns(): RunRow[] {
+  const db = getDb();
+  return db.prepare(`
+    SELECT * FROM runs WHERE status = 'running'
+    ORDER BY started_at DESC LIMIT 5
+  `).all() as unknown as RunRow[];
+}
+
 export function listRuns(limit = 20): RunRow[] {
   const db = getDb();
   return db.prepare(`
