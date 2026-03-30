@@ -5,5 +5,9 @@
   "description": "OpenClaw-first run debugger — see what your agent is doing",
   "extensions": [
     "./dist/index.js"
-  ]
+  ],
+  "configSchema": {
+    "type": "object",
+    "properties": {}
+  }
 }
