@@ -1,0 +1,9 @@
+# Local planning and context docs (not for version control)
+CLAW_DOING_PROJECT_BRIEF.md
+CLAW_DOING_CONTEXT.md
+
+# Build output
+dist/
+
+# Dependencies
+node_modules/

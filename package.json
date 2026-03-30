@@ -1,0 +1,30 @@
+{
+  "name": "claw-doing",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "OpenClaw-first run debugger — see what your agent is doing",
+  "openclaw": {
+    "extensions": [
+      "./dist/index.js"
+    ]
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
